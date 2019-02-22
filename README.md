@@ -4,6 +4,12 @@ Create your own VPS from Linode, GCP, Vultr, Digital Ocean or Azure. I haven't t
 
 Select operating system Ubuntu.
 
+This guide help you setup two ways to safe surf the internet, proxy and VPN.
+
+Both ways are good.
+
+The proxy way give you more options than VPN. You can make the proxy system-wide or just for individual app.
+
 ## Install software
 
 1. `sudo apt install squid3 stunnel4 openvpn easy-rsa`
@@ -42,6 +48,6 @@ Select operating system Ubuntu.
 
 # Reboot
 
-After system rebooted, if the iptables-persistent doesn't work, execute below command again:
+After system restarted, if the iptables-persistent doesn't work, execute below command again:
 
 28. `sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
