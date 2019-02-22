@@ -8,7 +8,7 @@ This guide help you setup two ways to safe surf the internet, proxy and VPN.
 
 Both ways are good.
 
-The proxy way give you more options than VPN. You can make the proxy system-wide or just for individual app.
+The proxy way gives you more options than VPN. You can make the proxy system-wide or just for individual app.
 
 ## Install software
 
