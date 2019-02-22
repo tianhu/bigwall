@@ -1,9 +1,15 @@
-# Install software
+# Chapter 1 Server Side Configuration
+
+Create your own VPS from Linode, GCP, Vultr, Digital Ocean or Azure. I haven't tried AWS. 
+
+Select operating system Ubuntu.
+
+## Install software
 
 1. `sudo apt install squid3 stunnel4 openvpn easy-rsa`
 2. `sudo -s`
 
-# Configure Stunnel
+## Configure Stunnel
 
 3. `cd /etc/stunnel`
 4. `openssl genrsa -out key.pem 2048`
@@ -13,7 +19,7 @@
 8. `vi /etc/default/stunnel4` **change the enabled line to 1: ENABLED=1**
 9. `service stunnel4 restart`
 
-# Configure OpenVPN
+## Configure OpenVPN
 
 10. `cd /etc/openvpn`
 11. `make-cadir easy-rsa`
@@ -28,7 +34,7 @@
 20. `cd ..`
 21. `vi server.conf` **Copy the content of openvpn-server.conf**
 22. `service openvpn restart`
-23. `vi /etc/sysctl.conf` **Uncomment th line: net.ipv4.ip_forward=1**
+23. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
 24. `sysctl -p`
 25. `ifconfig` **Check network interface name. Is it eth0?**
 26. `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
