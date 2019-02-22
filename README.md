@@ -51,7 +51,7 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 
 # Reboot
 
-Each time after the system restarted, if the iptables-persistent doesn't work, execute below command manually:
+Each time after the system restarted, if the iptables-persistent doesn't work, execute below commands manually:
 
 31. `sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
 32. `sudo iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
@@ -87,6 +87,7 @@ Stunnel is required. OpenVPN is optional.
     3. Modify its content, replace ``<server-address>`` with your VPS address.
     4. Copy it to ``/etc/stunnel`` folder.
     5. Modify ``/etc/default/stunnel4``, set **ENABLED=1**
+    6. Restart stunnel ``sudo service stunnel4 restart``
 
 - Mac
 
@@ -125,7 +126,7 @@ Stunnel is required. OpenVPN is optional.
     1. Download ``openvpn-client.ovpn`` from this github repository.
     2. Edit the file.
        - Replace ``<server-address>`` with your VPS address.
-       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key files from your VPS.
+       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key content from your VPS.
     3. For Ubuntu 1804, you need to fix the DNS leak.
        - `sudo apt install openvpn-systemd-resolved`
        - Copy below block to ``openvpn-client.ovpn``
@@ -144,7 +145,7 @@ Stunnel is required. OpenVPN is optional.
     1. Download ``openvpn-client.ovpn`` from this github repository.
     2. Edit the file.
        - Replace ``<server-address>`` with your VPS address.
-       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key files from your VPS.
+       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key content from your VPS.
     3. Launch ``tunnelblick``, import ``openvpn-client.ovpn``
 
 - Windows
@@ -152,5 +153,5 @@ Stunnel is required. OpenVPN is optional.
     1. Download ``openvpn-client.ovpn`` from this github repository.
     2. Edit the file.
        - Replace ``<server-address>`` with your VPS address.
-       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key files from your VPS.
+       - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key content from your VPS.
     3. Launch OpenVPN GUI, import ``openvpn-client.ovpn``
