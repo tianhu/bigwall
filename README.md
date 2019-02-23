@@ -10,6 +10,13 @@ Both ways are good.
 
 The proxy way gives you more options than VPN. You can make the proxy system-wide or just for individual app.
 
+## Overview
+
+![picture](architecture.png)
+
+* All network traffic through the stunnel (a SSL proxy).
+* Provide client side applications multiple choice to access the internet via HTTP(S) proxy, SOCKS5 proxy or VPN.
+
 ## Install Software
 
 1. `sudo apt install squid3 stunnel4 openvpn easy-rsa`
