@@ -2,7 +2,7 @@
 
 Create your own VPS from Linode, GCP, Vultr, Digital Ocean or Azure. I haven't tried AWS. 
 
-Select operating system Ubuntu.
+Choose the operating system Ubuntu.
 
 This guide help you setup two ways to safe surf the internet, proxy and VPN.
 
