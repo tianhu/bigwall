@@ -26,44 +26,45 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 
 3. `cd /etc/stunnel`
 4. `openssl genrsa -out key.pem 2048`
-5. `openssl req -new -x509 -key key.pem -out cert.pem -days 3650 cat key.pem cert.pem >> stunnel.pem` **Set Common Name to your vps public IP or domain name**
-6. `openssl pkcs12 -export -out stunnel.p12 -inkey key.pem -in cert.pem`
-7. `vi stunnel.conf` **Copy the content of stunnel-server.conf**
-8. `vi /etc/default/stunnel4` **change the enabled line to 1: ENABLED=1**
-9. `service stunnel4 restart`
-10. `iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
-11. `iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
-12. `iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
+5. `openssl req -new -x509 -key key.pem -out cert.pem -days 3650` **Set Common Name to your vps public IP or domain name**
+6. `cat key.pem cert.pem >> stunnel.pem`
+7. `openssl pkcs12 -export -out stunnel.p12 -inkey key.pem -in cert.pem`
+8. `vi stunnel.conf` **Copy the content of stunnel-server.conf**
+9. `vi /etc/default/stunnel4` **change the enabled line to 1: ENABLED=1**
+10. `service stunnel4 restart`
+11. `iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
+12. `iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
+13. `iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
 
 ## Configure OpenVPN
 
-13.  `cd /etc/openvpn`
-14.  `make-cadir easy-rsa`
-15.  `cd easy-rsa`
-16.  `cp openssl-1.0.0.cnf openssl.cnf`
-17.  `source ./vars`
-18.  `./clean-all`
-19.  `./build-ca`
-20.  `./build-key-server server` **Set Common Name to your vps public IP or domain name**
-21.  `./build-key client`
-22. `./build-dh`
-23. `cd ..`
-24. `vi server.conf` **Copy the content of openvpn-server.conf**
-25. `service openvpn restart`
-26. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
-27. `sysctl -p`
-28. `ifconfig` **Check network interface name. Is it eth0?**
-29. `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
-30. `apt install iptables-persistent`
+14.  `cd /etc/openvpn`
+15.  `make-cadir easy-rsa`
+16.  `cd easy-rsa`
+17.  `cp openssl-1.0.0.cnf openssl.cnf`
+18.  `source ./vars`
+19.  `./clean-all`
+20.  `./build-ca`
+21.  `./build-key-server server` **Set Common Name to your vps public IP or domain name**
+22.  `./build-key client`
+23. `./build-dh`
+24. `cd ..`
+25. `vi server.conf` **Copy the content of openvpn-server.conf**
+26. `service openvpn restart`
+27. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
+28. `sysctl -p`
+29. `ifconfig` **Check network interface name. Is it eth0?**
+30. `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
+31. `apt install iptables-persistent`
 
 # Reboot
 
 Each time after the system restarted, if the iptables-persistent doesn't work, execute below commands manually:
 
-31. `sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
-32. `sudo iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
-33. `sudo iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
-34. `sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
+32. `sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
+33. `sudo iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
+34. `sudo iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
+35. `sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
 
 ---
 
