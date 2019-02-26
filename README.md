@@ -66,6 +66,8 @@ Each time after the system restarted, if the iptables-persistent doesn't work, e
 34. `sudo iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
 35. `sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
 
+> Use commands `sudo iptables -L` and `sudo iptables -t nat -L` to see the firewall rules.
+
 ---
 
 # Chapter 2 Client Side Configuration
