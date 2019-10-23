@@ -49,7 +49,7 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 22.  `./build-key client`
 23. `./build-dh`
 24. `cd ..`
-25. `vi server.conf` **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS address.**
+25. `vi server.conf` **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS IP address.**
 26. `service openvpn restart`
 27. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
 28. `sysctl -p`
