@@ -49,7 +49,7 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 22.  `./build-key client`
 23. `./build-dh`
 24. `cd ..`
-25. `vi server.conf` **Copy the content of openvpn-server.conf**
+25. `vi server.conf` **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS address.**
 26. `service openvpn restart`
 27. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
 28. `sysctl -p`
@@ -94,17 +94,15 @@ Stunnel is required. OpenVPN is optional.
 
     1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to the same folder on your client.
     2. Download ``stunnel-client.conf`` from this github repository.
-    3. Modify its content, replace ``<server-address>`` with your VPS address.
-    4. Copy it to ``/etc/stunnel`` folder.
-    5. Modify ``/etc/default/stunnel4``, set **ENABLED=1**
-    6. Restart stunnel ``sudo service stunnel4 restart``
+    3. Copy it to ``/etc/stunnel`` folder.
+    4. Modify ``/etc/default/stunnel4``, set **ENABLED=1**
+    5. Restart stunnel ``sudo service stunnel4 restart``
 
 - Mac
 
     1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``/usr/local/etc/stunnel`` on your Mac.
     2. Download ``stunnel-client.conf`` from this github repository.
-    3. Modify its content, replace ``<server-address>`` with your VPS address.
-    4. Copy it to ``/usr/local/etc/stunnel`` folder.
+    3. Copy it to ``/usr/local/etc/stunnel`` folder.
 
     To start the stunnel, You need to open a terminal and run command ``stunnel``.
 
@@ -112,8 +110,7 @@ Stunnel is required. OpenVPN is optional.
   
     1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``C:\Program Files (x86)\stunnel\config`` on your Mac.
     2. Download ``stunnel-client.conf`` from this github repository.
-    3. Modify its content, replace ``<server-address>`` with your VPS address.
-    4. Copy it to ``C:\Program Files (x86)\stunnel\config`` folder.
+    3. Copy it to ``C:\Program Files (x86)\stunnel\config`` folder.
 
 ## Install OpenVPN
 
