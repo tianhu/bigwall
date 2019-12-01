@@ -97,6 +97,7 @@ Stunnel is required. OpenVPN is optional.
     
 - Android
 
+    ![picture](ssldroid.jpg)  
     Install `SSLDroid` from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid
 
 
@@ -145,6 +146,7 @@ Stunnel is required. OpenVPN is optional.
     
 - Android
 
+    ![picture](openvpn-for-android.jpg)  
     Install `OpenVPN for Android` from Google Play Store https://play.google.com/store/apps/details?id=de.blinkt.openvpn
 
 
