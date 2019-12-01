@@ -26,11 +26,14 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 
 3. `cd /etc/stunnel`
 4. `openssl genrsa -out key.pem 2048`
-5. `openssl req -new -x509 -key key.pem -out cert.pem -days 3650` **Set Common Name to your vps public IP or domain name**
+5. `openssl req -new -x509 -key key.pem -out cert.pem -days 3650`  
+> **Set Common Name to your vps public IP or domain name**
 6. `cat key.pem cert.pem >> stunnel.pem`
 7. `openssl pkcs12 -export -out stunnel.p12 -inkey key.pem -in cert.pem`
-8. `vi stunnel.conf` **Copy the content of stunnel-server.conf**
-9. `vi /etc/default/stunnel4` **change the enabled line to 1: ENABLED=1**
+8. `vi stunnel.conf`  
+> **Copy the content of stunnel-server.conf**
+9. `vi /etc/default/stunnel4`  
+> **change the enabled line to 1: ENABLED=1**
 10. `service stunnel4 restart`
 11. `iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
 12. `iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
@@ -45,15 +48,19 @@ The proxy way gives you more options than VPN. You can make the proxy system-wid
 18.  `source ./vars`
 19.  `./clean-all`
 20.  `./build-ca`
-21.  `./build-key-server server` **Set Common Name to your vps public IP or domain name**
+21.  `./build-key-server server`  
+> **Set Common Name to your vps public IP or domain name**
 22.  `./build-key client`
 23. `./build-dh`
 24. `cd ..`
-25. `vi server.conf` **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS IP address.**
+25. `vi server.conf`  
+> **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS IP address.**
 26. `service openvpn restart`
-27. `vi /etc/sysctl.conf` **Uncomment the line: net.ipv4.ip_forward=1**
+27. `vi /etc/sysctl.conf`  
+> **Uncomment the line: net.ipv4.ip_forward=1**
 28. `sysctl -p`
-29. `ifconfig` **Check network interface name. Is it eth0?**
+29. `ifconfig`  
+> **Check network interface name. Is it eth0?**
 30. `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
 31. `apt install iptables-persistent`
 
@@ -90,7 +97,7 @@ Stunnel is required. OpenVPN is optional.
     
 - Android
 
-    Install SSLDroid from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid
+    Install `SSLDroid` from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid
 
 
 ## Configure Stunnel
@@ -100,7 +107,8 @@ Stunnel is required. OpenVPN is optional.
     1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to the same folder on your client.
     2. Download ``stunnel-client.conf`` from this github repository.
     3. Copy it to ``/etc/stunnel`` folder.
-    4. Modify ``/etc/default/stunnel4``, set **ENABLED=1**
+    4. Modify ``/etc/default/stunnel4``  
+    > set **ENABLED=1**
     5. Restart stunnel ``sudo service stunnel4 restart``
 
 - Mac
@@ -119,7 +127,7 @@ Stunnel is required. OpenVPN is optional.
 
 - Android
 
-    1. The PKCS12 file is the stunnel.p12 generated from upon step 7.
+    1. The PKCS12 file is the `stunnel.p12` generated from upon step 7.
 
 ## Install OpenVPN
 
@@ -137,7 +145,7 @@ Stunnel is required. OpenVPN is optional.
     
 - Android
 
-    Install OpenVPN for Android from Google Play Store https://play.google.com/store/apps/details?id=de.blinkt.openvpn
+    Install `OpenVPN for Android` from Google Play Store https://play.google.com/store/apps/details?id=de.blinkt.openvpn
 
 
 ## Configure OpenVPN
@@ -179,4 +187,4 @@ Stunnel is required. OpenVPN is optional.
 
 - Android
 
-    1. You must exclude the SSLDroid bypass the VPN in the OpenVPN settings. It is because the OpenVPN traffic need to pass via the stunnel.
+    1. You must exclude the `SSLDroid` bypass the VPN in the OpenVPN settings. It is because the OpenVPN traffic need to pass via the stunnel.
