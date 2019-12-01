@@ -87,6 +87,11 @@ Stunnel is required. OpenVPN is optional.
 - Windows
 
     Download the setup program from https://www.stunnel.org
+    
+- Android
+
+    Install SSLDroid from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid
+
 
 ## Configure Stunnel
 
@@ -112,6 +117,10 @@ Stunnel is required. OpenVPN is optional.
     2. Download ``stunnel-client.conf`` from this github repository.
     3. Copy it to ``C:\Program Files (x86)\stunnel\config`` folder.
 
+- Android
+
+    1. The PKCS12 file is the stunnel.p12 generated from upon step 7.
+
 ## Install OpenVPN
 
 - Ubuntu
@@ -125,6 +134,11 @@ Stunnel is required. OpenVPN is optional.
 - Windows
 
     Download the setup program from https://openvpn.net/community-downloads
+    
+- Android
+
+    Install OpenVPN for Android from Google Play Store https://play.google.com/store/apps/details?id=de.blinkt.openvpn
+
 
 ## Configure OpenVPN
 
@@ -162,3 +176,7 @@ Stunnel is required. OpenVPN is optional.
        - Replace ``<server-address>`` with your VPS address.
        - Follow the comments in the content, copy/paste the content of the CA certificate, client certificate and key content from your VPS.
     3. Launch OpenVPN GUI, import ``openvpn-client.ovpn``
+
+- Android
+
+    1. You must exclude the SSLDroid bypass the VPN in the OpenVPN settings. It is because the OpenVPN traffic need to pass via the stunnel.
