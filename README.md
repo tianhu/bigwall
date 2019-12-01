@@ -108,7 +108,7 @@ Stunnel is required. OpenVPN is optional.
 
 - Windows
   
-    1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``C:\Program Files (x86)\stunnel\config`` on your Mac.
+    1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``C:\Program Files (x86)\stunnel\config`` on your Windows.
     2. Download ``stunnel-client.conf`` from this github repository.
     3. Copy it to ``C:\Program Files (x86)\stunnel\config`` folder.
 
