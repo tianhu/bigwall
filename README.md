@@ -1,136 +1,224 @@
-# Chapter 1 Server Side Configuration
+# Setup OpenVPN over Stunnel on Linux
 
-Create your own VPS from Linode, GCP, Vultr, Digital Ocean or Azure. I haven't tried AWS. 
+I used below software and OS:
 
-Choose the operating system Ubuntu.
+Ubuntu 22.04.5 LTS (Jammy Jellyfish).
 
-This guide help you setup two ways to safe surf the internet, proxy and VPN.
+| Software  | Version  |
+|-----------|----------|
+| squid     | 5.9      |
+| stunnel   | 5.75     |
+| openvpn   | 2.5.11   |
+| easy-rsa  | 3.0.8    |
 
-Both ways are good.
+## Server Side Configuration
 
-The proxy way gives you more options than VPN. You can make the proxy system-wide or just for individual app.
+Create your own VPS from the cloud vendors, such like: Linode, GCP, Vultr, Digital Ocean or Azure...
 
-## Overview
+Recently I found some cheaper VPS vendors: raksmart, racknerd, buyvm, cloudcone.
+
+### Overview
 
 ![picture](architecture.png)
 
-* All network traffic through the stunnel (a SSL proxy).
-* Provide client side applications multiple choice to access the internet via HTTP(S) proxy, SOCKS5 proxy or VPN.
+* All network traffic through the SSL tunnel (stunnel).
+* It provide client side applications multiple choice to access the internet through HTTP(S) proxy, SOCKS5 proxy or VPN.
 
-## Install Software
+### Install Software
 
-1. `sudo apt install squid3 stunnel4 openvpn easy-rsa`
-2. `sudo -s`
+```bash
+sudo -s
+apt install build-essential libssl-dev squid openvpn easy-rsa
+```
 
-## Configure Stunnel
+### Build stunnel from source files.
 
-3. `cd /etc/stunnel`
-4. `openssl genrsa -out key.pem 2048`
-5. `openssl req -new -x509 -key key.pem -out cert.pem -days 3650`  
-> **Set Common Name to your vps public IP or domain name**
-6. `cat key.pem cert.pem >> stunnel.pem`
-7. `openssl pkcs12 -export -out stunnel.p12 -inkey key.pem -in cert.pem`
-8. `vi stunnel.conf`  
-> **Copy the content of stunnel-server.conf**
-9. `vi /etc/default/stunnel4`  
-> **change the enabled line to 1: ENABLED=1**
-10. `service stunnel4 restart`
-11. `iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
-12. `iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
-13. `iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
+```bash
+wget https://www.stunnel.org/downloads/stunnel-5.75.tar.gz
+wget https://www.stunnel.org/downloads/stunnel-5.75.tar.gz.sha256
+sha256sum --check stunnel-5.75.tar.gz.sha256
+tar xvf stunnel-5.75.tar.gz
+cd stunnel-5.75
+./configure
+make
+make install
+```
 
-## Configure OpenVPN
+### Configure Stunnel
 
-14.  `cd /etc/openvpn`
-15.  `make-cadir easy-rsa`
-16.  `cd easy-rsa`
-17.  `cp openssl-1.0.0.cnf openssl.cnf`
-18.  `source ./vars`
-19.  `./clean-all`
-20.  `./build-ca`
-21.  `./build-key-server server`  
-> **Set Common Name to your vps public IP or domain name**
-22.  `./build-key client`
-23. `./build-dh`
-24. `cd ..`
-25. `vi server.conf`  
-> **Copy the content of openvpn-server.conf, replace ``<server-address>`` with your VPS IP address.**
-26. `service openvpn restart`
-27. `vi /etc/sysctl.conf`  
-> **Uncomment the line: net.ipv4.ip_forward=1**
-28. `sysctl -p`
-29. `ifconfig`  
-> **Check network interface name. Is it eth0?**
-30. `iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
-31. `apt install iptables-persistent`
+```bash
+# Change to tools directory under stunnel
+cd tools
 
-# Reboot
+# Generate certificate
+./makecert.sh
 
-Each time after the system restarted, if the iptables-persistent doesn't work, execute below commands manually:
+# Copy certificate to stunnel config directory
+cp stunnel.pem /usr/local/etc/stunnel/
 
-32. `sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT`
-33. `sudo iptables -A INPUT -p tcp --dport 7777 -j ACCEPT`
-34. `sudo iptables -A INPUT -p tcp --dport 7788 -j ACCEPT`
-35. `sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE`
+# Copy systemd service file
+cp stunnel.service /etc/systemd/system/
 
-> Use commands `sudo iptables -L` and `sudo iptables -t nat -L` to see the firewall rules.
+# Change to stunnel config directory
+cd /usr/local/etc/stunnel
+
+# Edit stunnel.conf
+# Copy the content of stunnel-server.conf from this repository
+vi stunnel.conf
+
+# Create stunnel user
+useradd -s /bin/false -r stunnel
+
+# Create stunnel runtime directory
+mkdir /var/lib/stunnel
+
+# Set ownership for stunnel directory
+chown stunnel:stunnel /var/lib/stunnel
+
+# Reload systemd daemon
+systemctl daemon-reload
+
+# Enable stunnel service
+systemctl enable stunnel
+
+# Start stunnel service
+systemctl start stunnel
+```
+
+### Add iptables rules
+
+```bash
+# Allow incoming TCP traffic on ports 443, 7777, and 7788
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport 7777 -j ACCEPT
+iptables -A INPUT -p tcp --dport 7788 -j ACCEPT
+
+# Save iptables rules permanently
+apt install iptables-persistent
+```
+
+### Configure OpenVPN
+
+```bash
+cd /etc/openvpn
+make-cadir easy-rsa
+cd easy-rsa
+./easyrsa clean-all
+./easyrsa build-ca
+./easyrsa build-server-full server
+./easyrsa build-client-full client
+./easyrsa gen-dh
+
+cd /etc/openvpn
+
+# Write the password of the server key in this file. It will be used in server.conf.
+vi pass
+
+# Copy the content of openvpn-server.conf from this repository, replace <server-address> with your VPS IP address.
+vi server.conf
+
+systemctl restart OpenVPN
+
+# Uncomment the line: net.ipv4.ip_forward=1
+vi /etc/sysctl.conf
+
+sysctl -p
+
+```
+
+### Add iptables rules
+
+```bash
+# Check network interface name. If it is not eth0 then replace eth0 with it in below command.
+ip a
+
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+
+# Save iptables rules permanently
+netfilter-persistent save
+```
+
+### Reboot
+
+Every time the system restarted, if the iptables-persistent doesn't work, execute below commands manually:
+
+```bash
+# Allow incoming TCP traffic on ports 443, 7777, and 7788
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 7777 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 7788 -j ACCEPT
+
+# Enable NAT for VPN subnet (replace eth0 with your network interface name if different)
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+
+# View current firewall rules
+sudo iptables -L
+sudo iptables -t nat -L
+```
 
 ---
 
-# Chapter 2 Client Side Configuration
+## Client Side Configuration
 
 Stunnel is required. OpenVPN is optional.
 
-## Install Stunnel
+### Install Stunnel
 
 - Ubuntu
 
-    `sudo apt install stunnel4`
+    Build from source files as on the server.
 
 - Mac
 
-    `brew install stunnel`
+```bash
+brew install stunnel
+```
 
 - Windows
 
-    Download the setup program from https://www.stunnel.org
+    Download the installer from https://www.stunnel.org
     
 - Android
 
-    ![picture](ssldroid.jpg)  
-    Install `SSLDroid` from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid
+    ~~![picture](ssldroid.jpg)  
+        Install `SSLDroid` from Google Play Store https://play.google.com/store/apps/details?id=hu.blint.ssldroid~~
 
+    It' too bad that the SSLDroid is disappeared from Google Play Store. So you need to search and download the apk file by yourself and install it on your android phone manually.
 
-## Configure Stunnel
+### Configure Stunnel
 
 - Ubuntu
 
-    1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to the same folder on your client.
-    2. Download ``stunnel-client.conf`` from this github repository.
-    3. Copy it to ``/etc/stunnel`` folder.
-    4. Modify ``/etc/default/stunnel4``  
-    > set **ENABLED=1**
-    5. Restart stunnel ``sudo service stunnel4 restart``
+    1. Copy ``/usr/local/etc/stunnel/stunnel.pem`` from your VPS to the same place on your client machine.
+    2. Copy ``stunnel-client.conf`` from this repository to ```/usr/local/etc/stunnel``` directory on your client machine.
+    3. Replace <server-address> with your VPS IP address in stunnel-client.conf.
+    4. Restart stunnel ``sudo systemctl restart stunnel``
 
 - Mac
 
-    1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``/usr/local/etc/stunnel`` on your Mac.
-    2. Download ``stunnel-client.conf`` from this github repository.
-    3. Copy it to ``/usr/local/etc/stunnel`` folder.
-
-    To start the stunnel, You need to open a terminal and run command ``stunnel``.
+    1. Copy ``/usr/local/etc/stunnel/stunnel.pem`` from your VPS to the same place on your Mac.
+    2. Copy ``stunnel-client.conf`` from this repository to the same place on your Mac.
+    3. Replace <server-address> with your VPS IP address in stunnel-client.conf.
+    4. To start the stunnel, open a terminal and run command ``stunnel``.
 
 - Windows
   
-    1. Copy ``/etc/stunnel/stunnel.pem`` from your VPS to ``C:\Program Files (x86)\stunnel\config`` on your Windows.
-    2. Download ``stunnel-client.conf`` from this github repository.
-    3. Copy it to ``C:\Program Files (x86)\stunnel\config`` folder.
+    1. Copy ``/usr/local/etc/stunnel/stunnel.pem`` from your VPS to your Windows machine.
+    2. Launch stunnel from Windows start menu.
+    3. Open stunnel application window, select edit configuration menu item.
+    4. Copy the content of ``stunnel-client.conf`` from this repository to the edit window.
+    5. Modify the cert path and replace <server-address> with your VPS IP address.
+    6. Save it.
 
 - Android
 
-    1. The PKCS12 file is the `stunnel.p12` generated from upon step 7.
+    1. Convert the stunnel.pem to PKCS12 format to be used in SSLDroid with below command.
 
-## Install OpenVPN
+        ```openssl pkcs12 -export -out stunnel.p12 -in stunnel.pem```
+    2. Copy stunnel.p12 to your android phone.
+    3. Launch SSLDroid on your android phone, add a tunnel following the GUI.
+
+### Install OpenVPN
 
 - Ubuntu
   
@@ -150,7 +238,7 @@ Stunnel is required. OpenVPN is optional.
     Install `OpenVPN for Android` from Google Play Store https://play.google.com/store/apps/details?id=de.blinkt.openvpn
 
 
-## Configure OpenVPN
+### Configure OpenVPN
 
 - Ubuntu
 
